@@ -1,0 +1,133 @@
+<!-- Question statement=    Create a search bar where users can search for any star wars character.
+On every letter typed, the user should be able to see the results. Optimize API call with throttling.
+Show the list of results in a div just below the input box.
+For reference check out this app https://star-wars-searchbar.vercel.app/
+use the following api - https://swapi.dev/api/people/?search={your_search_term}
+Additional functionality:-
+On clicking on any result show the details of that character on another page. -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        /* search bar */
+#movies{
+    /* border: 1px solid blue; */
+    display: grid;
+    text-align: center;
+    align-items: center;
+    height: 250px;
+    width: 300px;
+    margin-left: 510px;
+    overflow: scroll;
+    position: absolute;
+    background-color: rgba(77, 77, 77,0.5);
+    margin-top: 10px;
+    
+  }
+  .movie{
+    /* display: flex;
+    align-items: center; */
+    gap: 10px;
+    padding: 10px;
+
+  }
+  .movie img{
+    width: 100px;
+    height: 60px;
+  }
+  .movie>p{
+    color: white;
+  }
+  #query{
+    height: 50px;
+    width: 300px;
+    margin-left: 37%;
+  }
+
+
+    </style>
+</head>
+<body>
+    <div>
+      <h1>star wars character.</h1>
+      <p>eg, han solo, chewbacca, </p>
+        <input oninput="debounce(main,500)" type="text" id="query"  placeholder="search movie" />
+        <!-- debounce(main,1000) -->
+    </div>
+    
+   <div id="movies">
+    <!-- append searched part here -->
+   </div>
+</body>
+</html>
+
+<script>
+    async function main(){
+    let query = document.querySelector("#query").value;
+    let data = await getData(query);
+    append(data);
+    console.log(data);
+}
+// old   =    https://www.omdbapi.com/?apikey=af714f66&s=${query}
+//  new   =  "https://swapi.dev/api/people/?search=${query}"
+async  function getData(query){
+   
+    let url =`https://swapi.dev/api/people/?search=${query}`;
+    let res= await fetch(url);
+    let data = await res.json();
+    return data.results;
+    // console.log(data);
+  }
+//   Search
+  function append(data){
+    if(!data){
+      return;
+    }
+    let containet=document.getElementById("movies");
+
+    containet.innerHTML=null;
+
+    data.forEach (function(el){
+        let p1= document.createElement("p");
+        p1.innerText="Name:-"+ " "+ el.name;
+
+        let p2= document.createElement("p");
+        p2.innerText="skin color:-"+ " "+ el.skin_color;
+
+        let p3= document.createElement("p");
+        p3.innerText="Weight:-"+ " "+ el.mass+" "+ "kg";
+
+        let p4= document.createElement("p");
+        p4.innerText="height:-"+ " "+ el.height+" "+ "cm";
+
+        let p5= document.createElement("p");
+        p5.innerText="Gender:-"+ " "+ el.gender;
+
+        let p6= document.createElement("p");
+        p6.innerText="No og movie:-"+ " "+ el.films.length;
+        
+        let div=document.createElement("div");
+        div.setAttribute("class","movie");
+
+        div.append(p1,p2,p3,p4,p5,p6)
+        containet.append(div);
+
+    })
+  } 
+    // debounsing concept
+    let id;
+  function debounce(fun,delay){
+    if (id){
+      clearTimeout(id);
+    }
+    id= setTimeout(function(){
+      fun();
+    },delay)
+  }
+</script>
